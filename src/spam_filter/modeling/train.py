@@ -88,10 +88,10 @@ def training(splits: DataSplits,  verbose = False):
         # log.syslog(message=f"{name} - Recall: {metrics[metricsEnum.RECALL]}", verbose=verbose)
         # log.syslog(message=f"{name} - F1: {metrics[metricsEnum.F1]}", verbose=verbose)
 
-        # log.syslog(
-        #     f"{name} confusion matrix:\n"
-        #     f"{customer_confusion_matrix(y_test=y_val, predictions=predictions, title=f'{name} Confusion Matrix', saveFigure=True)}"
-        # )
+        log.syslog(
+            f"{name} confusion matrix:\n"
+            f"{customer_confusion_matrix(y_test=y_val, predictions=predictions, title=f'{name} Confusion Matrix', saveFigure=True)}"
+        )
 
 
         # log.syslog(
