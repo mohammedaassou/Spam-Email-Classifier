@@ -3,65 +3,11 @@ from pathlib import Path
 import joblib
 from sklearn.pipeline import Pipeline
 
-from spam_filter import log
-from spam_filter.data.cleaning import build_email_text
-
-
-def load_model(model_path: Path):
-    return joblib.load(model_path)
+from spam_filter.data.cleaning import build_email_text, clean_text
 
 
 
-def predict_email(modelpath: Path, subject: str, body: str) -> int:
-    text = build_email_text(subject, body)
-
-    model: Pipeline = load_model(modelpath)
-
-    # print("Textes différents :", data[EmailColumn.TEXT].nunique())
-    # print("Modèle sauvegardé :", type(model.steps[-1][1]).__name__)
-    # print(confusion_matrix(y_test, model.predict(X_test)))  
-
-    # log.syslog([type(step).__name__ for _, step in model.steps], )
-    # log.syslog(model.classes_)
-
-    return int(model.predict([text])[0])
-
-
-# def predict_email(modelpath, subject: str, body: str) -> dict:
-#     text = build_email_text(subject, body)
-
-#     model : Pipeline= load_model(modelpath)
-
-#     # log.syslog(type(model))
-
-#     result = model.predict([text])
-
-#     # print(result)
-
-#     # spam_index = list(model.classes_).index(1)
-#     # spam_probability = float(model.predict([text])[0, spam_index])
-
-#     return {
-#         "label" : "spam" if result is 1 else "ham",
-#         "spam_probability" : result * 100
-#     }
-
-#     # return {
-#     #     "label": "spam" if result >= 0.5 else "ham",
-#     #     "spam_probability": result,
-#     # }
-
-
-if __name__ == "__main__":
-    PROJECT_ROOT = Path(__file__).resolve().parents[3]
-
-    model_path = PROJECT_ROOT / "artifacts" / "spam_classifier.joblib"
-
-    # predict_email(PROJECT_ROOT / "artifacts" / "spam_classifier.joblib", "test" , "give me your bank number")
-
-    # predict_email(PROJECT_ROOT / "artifacts" / "spam_classifier.joblib", "test", "give me your bank number hhhhhh ")
-
-    test_emails = [
+test_emails = [
     ("spam", "Important notice about your account",
      """Dear customer,
 
@@ -140,10 +86,44 @@ See you soon,
 Sam"""),
 ]
 
-    for expected, subject, body in test_emails:
-        predicted = predict_email(model_path, subject, body)
-        expected_number = 1 if expected == "spam" else 0
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+MODEL_PATH = PROJECT_ROOT / "artifacts" / "spam_classifier.joblib"
 
-        print(f"Expected: {expected_number} | Predicted: {predicted} | {subject}")
 
+CLASSES : dict[int, str]  =  {
+    1: "spam", 
+    0: "ham", 
+
+} 
+
+def load_model(model_path: Path) -> Pipeline:
+    return joblib.load(model_path)
+
+
+def predict_email(model , text : str) -> int:
+    return int(model.predict([text])[0])
+
+
+def run_prediction_pipeline(
+    subject: str,
+    body: str,
+    model_path: Path = MODEL_PATH,
+) -> int:
+
+    text = build_email_text(subject, body)
+
+    text = clean_text(text)
     
+    model = load_model(model_path)
+
+    return predict_email(model, text)
+
+
+if __name__ == "__main__":
+    for expected, subject, body in test_emails:
+        predicted = run_prediction_pipeline(subject, body)
+
+        print(f"Predicted: {CLASSES[predicted]}, Expected : {expected}")
+    test_emails
+
+
