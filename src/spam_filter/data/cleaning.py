@@ -2,6 +2,8 @@
 
 from enum import StrEnum
 from pathlib import Path
+import re
+import string
 
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
@@ -9,10 +11,7 @@ from sklearn.preprocessing import LabelEncoder
 from spam_filter import log
 
 
-
-
-
-# id,filename,subject,body,label
+from nltk.stem import PorterStemmer
 
 
 
@@ -31,6 +30,30 @@ REQUIRED_COLUMNS = [
     EmailColumn.BODY,
     EmailColumn.LABEL,
 ]
+
+
+# return dict of Unicode of special caracteres
+ponctuations = str.maketrans("", "", string.punctuation)
+
+stemmer = PorterStemmer()
+
+def clean_text(text: str):
+    # make the text lowercase
+    text = text.lower()
+    # remove ponctuations
+    text = text.translate( ponctuations )
+    # remove numbers 
+    text = re.sub(r"\d+" , "" , text)
+    # remove 
+
+    textStemmer = [stemmer.stem(word ) for word in  text.split()]
+
+    text = " ".join(textStemmer)
+
+    return text
+
+
+
 
 
 
@@ -100,8 +123,9 @@ def clean_dataset(df : pd.DataFrame, verbose = False) -> pd.DataFrame:
     + "\nbody: " + cleaned_data[EmailColumn.BODY]
     
     )
-    
-    
+
+
+    cleaned_data[EmailColumn.TEXT] = cleaned_data[EmailColumn.TEXT].apply(clean_text)
     
     labelEconder = LabelEncoder()
     

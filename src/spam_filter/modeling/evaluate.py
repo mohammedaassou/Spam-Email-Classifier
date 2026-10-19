@@ -8,7 +8,7 @@ from sklearn.metrics import RocCurveDisplay
 from sklearn.pipeline import Pipeline
 
 from spam_filter import log
-from spam_filter.modeling.split import DataSplits
+# from spam_filter.modeling.split import DataSplits
 from spam_filter.modeling.utils import calc_metrics, customer_confusion_matrix, metricsEnum
 
 
@@ -33,7 +33,7 @@ def evaluate_model(modelpath : Path, X_test: pd.Series, y_test:  pd.Series,  art
 
 
 
-    log.syslog(f"Confusion matrix{customer_confusion_matrix(predictions= predictions, y_test= y_test, title="Final model - logistic regression", saveFigure=True)}",)
+    log.syslog(f"Confusion matrix{customer_confusion_matrix(predictions= predictions, y_test= y_test, title="Final model Test - logistic regression", saveFigure=True)}",)
 
 
     artifactpath.mkdir(parents=True, exist_ok=True)

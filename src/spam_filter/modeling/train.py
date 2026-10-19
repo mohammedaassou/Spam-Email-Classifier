@@ -37,7 +37,7 @@ def training(splits: DataSplits,  verbose = False):
 
     modelbaseline = DummyClassifier(strategy="most_frequent")
     
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(stop_words="english", lowercase=True)
     modelNB = make_pipeline(
         vectorizer,
         MultinomialNB()
@@ -90,7 +90,7 @@ def training(splits: DataSplits,  verbose = False):
 
         log.syslog(
             f"{name} confusion matrix:\n"
-            f"{customer_confusion_matrix(y_test=y_val, predictions=predictions, title=f'{name} Confusion Matrix', saveFigure=True)}"
+            f"{customer_confusion_matrix(y_test=y_val, predictions=predictions, title=f'Validation - {name} - Confusion Matrix ', saveFigure=True)}"
         )
 
 
