@@ -4,7 +4,10 @@ from enum import StrEnum
 from pathlib import Path
 
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder 
+from sklearn.preprocessing import LabelEncoder
+
+from spam_filter import log
+
 
 
 
@@ -30,12 +33,18 @@ REQUIRED_COLUMNS = [
 ]
 
 
-def clean_dataset(df : pd.DataFrame) -> pd.DataFrame:
+
+
+def build_email_text(subject: str, body: str) -> str:
+    return f"subject: {subject}\nbody: {body}"
+
+def clean_dataset(df : pd.DataFrame, verbose = False) -> pd.DataFrame:
      
-    df.head()
+    log.syslog(message="Cleaning dataset...", verbose=verbose)  
+    log.syslog(message="First few rows of the dataset:", verbose=verbose)
+    # log.syslog(message= df.head(), verbose=verbose)
     
-    
-    print(df.columns )
+    log.syslog(message= f"Columns: {df.columns}", verbose=verbose)
     
     allcols =  df.columns 
     
@@ -43,12 +52,12 @@ def clean_dataset(df : pd.DataFrame) -> pd.DataFrame:
     mssingCols = set(REQUIRED_COLUMNS) - set(allcols) 
     
     
-    print("mssingCols : ", mssingCols)
+    log.syslog(message= f"mssingCols : {mssingCols}", verbose=verbose , level=log.WARNING)
     
     
     
     if mssingCols:
-        print("cols missing")
+        log.syslog(message="cols missing", verbose=verbose , level=log.ERROR)
         return
     
     
@@ -77,10 +86,11 @@ def clean_dataset(df : pd.DataFrame) -> pd.DataFrame:
         
     
     )
-    print("Duplicate emails:", duplicate_count)
-    print("Emails with conflicting labels:", conflicting_labels)
+    log.syslog(message= f"Duplicate emails:{duplicate_count}", verbose= verbose)
+    log.syslog(message= f"Emails with conflicting labels:{conflicting_labels}", verbose= verbose)
     
-    if conflicting_labels:
+    if conflicting_labels :
+        log.syslog(message="Identical emails have different labels.", verbose=verbose , level=log.ERROR)
         raise ValueError("Identical emails have different labels.")
     
     cleaned_data = cleaned_data.drop_duplicates(subset=email_cols)
@@ -97,9 +107,17 @@ def clean_dataset(df : pd.DataFrame) -> pd.DataFrame:
     
     cleaned_data[EmailColumn.TARGET] = labelEconder.fit_transform(cleaned_data[EmailColumn.LABEL])
     
-    
+    label_mapping = {
+    label: index
+    for index, label in enumerate(labelEconder.classes_)
+}
 
-    print("Label order:", labelEconder.classes_)
+    log.syslog(message=f"Label mapping: {label_mapping}", verbose=verbose)
+
+    if label_mapping != {"ham": 0, "spam": 1}:
+        raise ValueError(f"Unexpected label mapping: {label_mapping}", verbose)
+    
+    log.syslog( message= f"Label order: {labelEconder.classes_}", verbose=verbose)
     return cleaned_data.reset_index(drop=True)
 
 
@@ -107,11 +125,14 @@ def main() -> None:
     data_path = Path("data/processed/emails.csv")
     df = pd.read_csv(data_path)
 
-    cleaned_data = clean_dataset(df)
+    cleaned_data = clean_dataset(df, verbose=True)
 
-    print("Before:", len(df))
-    print("After:", len(cleaned_data))
-    print(cleaned_data[EmailColumn.TARGET].value_counts())
+    # log.syslog(f"cleaned_data.target : {cleaned_data[["text"]]}")
+
+    log.syslog( message= f"Before:{len(df)}"  )
+    log.syslog(message= f"After:{len(cleaned_data)}", verbose=True)
+    log.syslog(message= f"Target value counts: {cleaned_data[EmailColumn.TARGET].value_counts()}", verbose=True)
+
 
 
 if __name__ == "__main__":

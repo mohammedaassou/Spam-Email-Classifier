@@ -9,6 +9,8 @@ from urllib.request import urlretrieve
 
 import pandas as pd
 
+from spam_filter import log
+
 
 ARCHIVES = {
     "ham": {
@@ -37,12 +39,12 @@ def download_archives() -> None:
         archive_path.parent.mkdir(parents=True, exist_ok=True)
 
         if archive_path.exists():
-            print(f"{label} archive already exists: {archive_path}")
+            log.syslog(f"{label} archive already exists: {archive_path}")
             continue
 
-        print(f"Downloading {label} archive...")
+        log.syslog(f"Downloading {label} archive...")
         urlretrieve(archive_info["url"], archive_path)
-        print(f"Downloaded: {archive_path}")
+        log.syslog(f"Downloaded: {archive_path}")
         
     
 def extract_text(message) -> str:
@@ -108,7 +110,7 @@ def build_dataset() -> list[dict[str, str]]:
                         }
                     )
                 except Exception as error:
-                    print(f"Could not parse {member.name}: {error}")
+                    log.syslog(f"Could not parse {member.name}: {error}")
 
     return rows
           
@@ -123,7 +125,7 @@ def save_csv(rows: list[dict[str, str]]) -> None:
     dataframe = pd.DataFrame(rows)
     dataframe.to_csv(output_path, index=True, index_label="id")
 
-    print(f"Saved {len(dataframe)} emails to {output_path}")
+    log.syslog(f"Saved {len(dataframe)} emails to {output_path}")
 
 
 def downloadData() -> None:
@@ -134,8 +136,8 @@ def downloadData() -> None:
     # spam_count = sum(row["label"] == "spam" for row in rows)
     # ham_count = sum(row["label"] == "ham" for row in rows)
 
-    # print(f"Ham messages: {ham_count}")
-    # print(f"Spam messages: {spam_count}")
+    # log.syslog(f"Ham messages: {ham_count}")
+    # log.syslog(f"Spam messages: {spam_count}")
 
 
 # if __name__ == "__main__":
