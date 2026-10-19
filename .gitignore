@@ -1,0 +1,45 @@
+# Python bytecode and build output
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Virtual environments and local secrets
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Test, type-checking, and lint caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Notebook checkpoints (keep actual notebooks)
+.ipynb_checkpoints/
+
+# Downloaded and generated email data
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Trained models, generated figures, and run outputs
+*.joblib
+!artifacts/.gitkeep
+logs/*
+!logs/.gitkeep
+*.log
+
+# Editor and operating-system files
+.DS_Store
+.idea/
+.vscode/
+
+# Keep uv.lock tracked for reproducible installs.
