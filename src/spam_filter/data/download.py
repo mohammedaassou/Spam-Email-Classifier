@@ -126,17 +126,17 @@ def save_csv(rows: list[dict[str, str]]) -> None:
     print(f"Saved {len(dataframe)} emails to {output_path}")
 
 
-def main() -> None:
+def downloadData() -> None:
     download_archives()
     rows = build_dataset()
     save_csv(rows)
 
-    spam_count = sum(row["label"] == "spam" for row in rows)
-    ham_count = sum(row["label"] == "ham" for row in rows)
+    # spam_count = sum(row["label"] == "spam" for row in rows)
+    # ham_count = sum(row["label"] == "ham" for row in rows)
 
-    print(f"Ham messages: {ham_count}")
-    print(f"Spam messages: {spam_count}")
+    # print(f"Ham messages: {ham_count}")
+    # print(f"Spam messages: {spam_count}")
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
