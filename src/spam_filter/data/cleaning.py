@@ -13,7 +13,15 @@ from spam_filter import log
 
 from nltk.stem import PorterStemmer
 
+import nltk
 
+from nltk.corpus import stopwords
+
+
+nltk.download("stopwords")
+
+
+STOP_WORDS = set(stopwords.words("english") )
 
 class EmailColumn(StrEnum):
     FILENAME = "filename"
@@ -44,9 +52,12 @@ def clean_text(text: str):
     text = text.translate( ponctuations )
     # remove numbers 
     text = re.sub(r"\d+" , "" , text)
-    # remove 
+    # remove stop words
+    words = text.split()
 
-    textStemmer = [stemmer.stem(word ) for word in  text.split()]
+    words = [word for word in words if word not in STOP_WORDS]
+    # stemming
+    textStemmer = [stemmer.stem(word ) for word in words]
 
     text = " ".join(textStemmer)
 
@@ -59,7 +70,7 @@ def clean_text(text: str):
 
 
 def build_email_text(subject: str, body: str) -> str:
-    return f"subject: {subject}\nbody: {body}"
+    return f"{subject}\n{body}"
 
 def clean_dataset(df : pd.DataFrame, verbose = False) -> pd.DataFrame:
      
@@ -126,6 +137,14 @@ def clean_dataset(df : pd.DataFrame, verbose = False) -> pd.DataFrame:
 
 
     cleaned_data[EmailColumn.TEXT] = cleaned_data[EmailColumn.TEXT].apply(clean_text)
+
+
+
+    # short_emails = cleaned_data[cleaned_data[EmailColumn.TEXT].fillna("").str.split().str.len() < 20]
+
+    # print(f"Short emails: {len(short_emails)}")
+    # # print(short_emails[[EmailColumn.TEXT, EmailColumn.LABEL]].to_string(index=False))
+    # Show the 10 shortest emails by word count
     
     labelEconder = LabelEncoder()
     

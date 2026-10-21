@@ -37,7 +37,9 @@ def training(splits: DataSplits,  verbose = False):
 
     modelbaseline = DummyClassifier(strategy="most_frequent")
     
-    vectorizer = TfidfVectorizer(stop_words="english", lowercase=True)
+    vectorizer = TfidfVectorizer(lowercase=True)
+
+    
     modelNB = make_pipeline(
         vectorizer,
         MultinomialNB()
