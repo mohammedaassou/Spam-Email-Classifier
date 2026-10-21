@@ -1,2 +1,11 @@
+
+
+import uvicorn
+
+from spam_filter.api.main import app
+
 def main() -> None:
-    print("Hello from spam-filter!")
+    uvicorn.run(
+        app = app
+    )
+

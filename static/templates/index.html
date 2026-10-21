@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#244a3b">
+  <title>Inbox — Spam Classifier</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Logo">
+        <img src="/static/assets/logo.png" alt="Logo" height="40" style="height: 40px; width: auto; vertical-align: middle;">
+      </a>
+      <span class="header-note">An email classifier, made simple.</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow"><span class="tiny-dot" aria-hidden="true"></span> A SECOND LOOK AT YOUR EMAIL</p>
+        <h1 id="page-title">A little clarity<br>for your <em>inbox.</em></h1>
+        <p class="intro-copy">A meeting invitation or an unexpected offer?<br class="desktop-break"> Paste an email below and let your model take a look.</p>
+      </section>
+
+      <div class="workspace">
+        <section class="editor-panel" aria-labelledby="editor-title">
+          <div class="panel-heading">
+            <div><p class="section-number">01 / THE EMAIL</p><h2 id="editor-title">What landed in your inbox?</h2></div>
+            <span class="paper-icon" aria-hidden="true">↗</span>
+          </div>
+          <form id="email-form">
+            <div class="field">
+              <label for="subject">Subject</label>
+              <input id="subject" name="subject" type="text" placeholder="e.g. A quick catch-up this afternoon" maxlength="1000" required>
+            </div>
+            <div class="field body-field">
+              <div class="label-row"><label for="body">Email body</label><span id="character-count">0 characters</span></div>
+              <textarea id="body" name="body" placeholder="Hi there,&#10;&#10;Paste your email message here…" maxlength="100000" required></textarea>
+            </div>
+            <div class="editor-tools">
+              <button class="example-button" id="example" type="button">Try a meeting note <span aria-hidden="true">↗</span></button>
+              <button class="clear-button" id="clear" type="button">Clear</button>
+            </div>
+            <button class="predict-button" id="submit" type="submit"><span id="button-label">Check this email</span><span class="button-arrow" aria-hidden="true">→</span></button>
+            <p class="form-note">Both fields help give your model the full picture.</p>
+          </form>
+        </section>
+
+        <aside class="result-panel" aria-labelledby="result-heading">
+          <p class="section-number">02 / THE RESULT</p>
+          <h2 id="result-heading">The verdict</h2>
+          <div id="result" class="result-content" role="status" aria-live="polite" aria-atomic="true" data-state="idle">
+            <div class="result-illustration" aria-hidden="true"><span class="envelope"></span><span class="envelope-spark">✦</span></div>
+            <span class="result-tag" id="result-tag">AWAITING YOUR EMAIL</span>
+            <h3 id="result-title">Ready when you are.</h3>
+            <p id="result-description">Your prediction will appear here after you check an email.</p>
+          </div>
+          <div class="result-footnote"><span class="note-symbol" aria-hidden="true">i</span><p>A prediction, not a guarantee.<br>Always use your own judgment with unfamiliar emails.</p></div>
+        </aside>
+      </div>
+      <div class="below-workspace"><span class="small-rule" aria-hidden="true"></span><p><strong>Ham?</strong> That's simply a legitimate email. No mystery meat involved.</p></div>
+    </main>
+    <footer class="site-footer"><span>Inbox / Spam Email Classifier</span><span>Built with curiosity by Mohamed Aassou. Powered by your model.</span></footer>
+  </div>
+  <script>
+    const form = document.getElementById("email-form");
+    const subject = document.getElementById("subject");
+    const body = document.getElementById("body");
+    const button = document.getElementById("submit");
+    const buttonLabel = document.getElementById("button-label");
+    const result = document.getElementById("result");
+    const resultTag = document.getElementById("result-tag");
+    const resultTitle = document.getElementById("result-title");
+    const resultDescription = document.getElementById("result-description");
+    const example = document.getElementById("example");
+    const clear = document.getElementById("clear");
+    const characterCount = document.getElementById("character-count");
+    let busy = false;
+    function updateCount() {
+      characterCount.textContent = `${body.value.length.toLocaleString()} characters`;
+    }
+    function setResult(state, tag, title, description) {
+      result.dataset.state = state;
+      resultTag.textContent = tag;
+      resultTitle.textContent = title;
+      resultDescription.textContent = description;
+    }
+    function resetResult() {
+      if (!busy) setResult("idle", "AWAITING YOUR EMAIL", "Ready when you are.", "Your prediction will appear here after you check an email.");
+    }
+    body.addEventListener("input", () => { updateCount(); resetResult(); });
+    subject.addEventListener("input", resetResult);
+    example.addEventListener("click", () => {
+      subject.value = "Project catch-up tomorrow";
+      body.value = "Hi everyone,\n\nCan we meet tomorrow afternoon to review the project updates? Please bring your notes and let me know what time works for you.\n\nBest regards,\nMohamed";
+      updateCount(); resetResult(); subject.focus();
+    });
+    clear.addEventListener("click", () => { form.reset(); updateCount(); resetResult(); subject.focus(); });
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (busy) return;
+      if (!subject.value.trim() || !body.value.trim()) {
+        setResult("error", "A LITTLE MORE CONTEXT", "Something's missing.", "Add a subject and an email body before checking.");
+        (!subject.value.trim() ? subject : body).focus();
+        return;
+      }
+      busy = true;
+      [button, example, clear, subject, body].forEach(element => element.disabled = true);
+      form.setAttribute("aria-busy", "true");
+      buttonLabel.textContent = "Taking a look…";
+      setResult("loading", "CHECKING YOUR EMAIL", "One moment…", "Your model is reading the email and preparing a prediction.");
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
+      try {
+        const response = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subject: subject.value, body: body.value }),
+          signal: controller.signal,
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok) {
+          let message = "The server couldn't complete the prediction. Please try again.";
+          if (typeof data?.detail === "string") message = data.detail;
+          else if (Array.isArray(data?.detail)) message = data.detail.map(item => item.msg).filter(Boolean).join(" ") || message;
+          throw new Error(message);
+        }
+        const label = typeof data?.label === "string" ? data.label.toLowerCase() : "";
+        if (!["ham", "spam"].includes(label)) throw new Error("The server returned an unexpected result. Check that /predict returns a ham or spam label.");
+        if (label === "spam") setResult("spam", "CLASSIFIED AS SPAM", "Worth a closer look.", "Your model flagged this email as spam. Take care before replying, opening links, or sharing information.");
+        else setResult("ham", "CLASSIFIED AS HAM", "Looks like regular mail.", "Your model classified this email as legitimate. This is a prediction, so still check the sender and context.");
+      } catch (error) {
+        const message = error.name === "AbortError" ? "The request took too long. Please try again." : error instanceof TypeError ? "Couldn't reach the server. Make sure FastAPI is running and open this page through it." : error.message;
+        setResult("error", "COULDN'T CHECK THIS EMAIL", "Let's try that again.", message);
+      } finally {
+        clearTimeout(timeout);
+        busy = false;
+        [button, example, clear, subject, body].forEach(element => element.disabled = false);
+        form.setAttribute("aria-busy", "false");
+        buttonLabel.textContent = "Check this email";
+      }
+    });
+  </script>
+</body>
+</html>
