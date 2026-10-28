@@ -1,0 +1,20 @@
+\chapter{What the evaluation showed}
+\section{Comparing the models}
+Figure~\ref{fig:compare} compares the models on the same validation group. The simple model that always chooses the majority class catches no spam. Naive Bayes catches eight of 76 spam emails but misses the other 68. Logistic Regression and SVM perform equally in the saved results: both catch 70 spam emails, miss six, and wrongly flag one legitimate email. Their displayed precision, recall and F1 scores are therefore tied. The project proceeds with Logistic Regression, which can also estimate a chance of spam, although the current web page does not show that estimate.
+
+\reportfigure{model_comparison_readable.png}{Comparison results for the models before the final test. Logistic Regression and SVM have the same scores in this figure.}{0.95}{fig:compare}
+
+Figures~\ref{fig:dummy}--\ref{fig:svm} show the mistakes behind the summary chart. In each matrix, the rows are the real labels and the columns are the predicted labels. These figures belong to the model comparison stage; they are separate from the final test.
+
+\reportfigure{validation_majority_readable.png}{Validation results for the majority-choice starting point: it misses all 76 spam emails.}{0.75}{fig:dummy}
+\reportfigure{validation_nb.png}{Naive Bayes comparison: eight spam emails caught and 68 missed.}{0.75}{fig:nb}
+\reportfigure{validation_logreg.png}{Logistic Regression comparison: one false alarm and six missed spam emails.}{0.75}{fig:logreg}
+\reportfigure{validation_svm.png}{Validation results for SVM: the same recorded mistake counts as Logistic Regression.}{0.75}{fig:svm}
+
+\section{Testing the chosen model}
+On the reserved test group, the chosen model classifies 493 legitimate emails and 93 spam emails correctly. It wrongly flags two legitimate emails and misses two spam emails, as Figure~\ref{fig:test} shows. That is 586 correct answers out of 590, or about 99.32\% accuracy. For spam specifically, both precision and recall are about 97.89\%; F1 is also about 97.89\%. These results apply to this test group and do not establish how well the model would handle today's incoming mail.
+
+Figure~\ref{fig:roc} shows how the model separates the two groups across different decision levels. Its displayed summary score rounds to 1.00. The figure does not provide the more precise value, so none is claimed here.
+
+\reportfigure{test_matrix.png}{Final test results: 493 legitimate and 93 spam emails classified correctly, with four mistakes in total.}{0.78}{fig:test}
+\reportfigure{roc_curve.png}{Final test curve showing how well the chosen model separates spam from legitimate mail at different decision levels.}{0.72}{fig:roc}

@@ -1,0 +1,12 @@
+\chapter{The email data}
+\section{Source and balance}
+The project draws on two publicly available SpamAssassin collections\cite{corpus}. It extracts each email's subject and plain-text body and stores them for analysis. The dataset examined for this report contains 2,998 emails: 2,500 legitimate messages and 498 spam messages. Figure~\ref{fig:class} shows this imbalance. A classifier that always says ``legitimate'' would be right often, but it would fail to catch every spam email. That is why the later comparison looks beyond overall accuracy.
+
+The examined data also contains 49 repeated subject-and-body pairs, two empty subjects and 212 empty bodies. No identical pair carries conflicting labels. These numbers describe the saved dataset used for inspection; a fresh download or different parsing method could produce different counts.
+
+\reportfigure{class_distribution.png}{Messages in the examined dataset before repeated emails are removed. Legitimate mail makes up 83.4\% of the total.}{0.86}{fig:class}
+
+\section{Preparing the messages}
+Missing subjects or bodies are treated as empty text. The project makes labels consistent, checks for contradictory labels on identical emails, and removes repeated subject-and-body pairs. This leaves 2,949 distinct pairs: 2,472 legitimate messages and 477 spam messages. Removing exact repeats before dividing the data prevents the same email from appearing in both learning and evaluation groups.
+
+For each remaining email, the subject and body are joined. The text is changed to lowercase, punctuation and numbers are removed, common English words are dropped, and related word forms are reduced to a common stem. A separate word-weighting step then gives more influence to words that help distinguish messages; this method is known as TF-IDF\cite{tfidf}. The word weights are learned only from the messages used to train a model\cite{pipeline}. Similar but non-identical emails can still appear in different groups.

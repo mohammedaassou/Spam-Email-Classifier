@@ -134,3 +134,39 @@ def format_run_summary(result: dict) -> str:
     ])
 
     return "\n".join(lines)
+
+
+
+def saveComparisonResultsGraph(comparison: dict):
+
+    ax = comparison.plot(
+        kind="bar",
+        figsize=(10, 5),
+        color=["steelblue", "coral", "seagreen"],
+        rot=0,
+    )
+
+    ax.set_title("Model comparison on the validation set")
+    ax.set_xlabel("Model")
+    ax.set_ylabel("Score")
+    ax.set_ylim(0, 1.15)
+    ax.legend(title="Spam metrics")
+
+    for container in ax.containers:
+        ax.bar_label(container, fmt="%.3f", padding=3)
+
+    fig = ax.figure
+    fig.tight_layout()
+
+    project_root = Path(__file__).resolve().parents[3]
+    output_dir = project_root / "artifacts"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    fig.savefig(
+        output_dir / "model_comparison.png",
+        dpi=300,
+        bbox_inches="tight",
+    )
+
+    plt.close(fig)
+

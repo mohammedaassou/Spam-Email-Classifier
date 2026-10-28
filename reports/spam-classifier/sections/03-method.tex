@@ -1,0 +1,10 @@
+\chapter{How the models were compared}
+\section{Keeping evaluation separate}
+The prepared emails are divided into three groups while keeping a similar share of spam in each. About 64\% are used to fit the candidate models, 16\% to compare them, and 20\% are held back for a final test. The comparison group contains 472 emails (396 legitimate, 76 spam); the final test group contains 590 (495 legitimate, 95 spam). Figure~\ref{fig:trainflow} gives a visual overview. It simplifies the process, so the three group sizes and the final retraining step are explained here.
+
+\reportfigure{training_flow.png}{Learning process: compare models, train the chosen one again, then run the final test.}{0.95}{fig:trainflow}
+
+The starting point is a model that always chooses the most common group. Three other approaches use weighted words: Naive Bayes, Logistic Regression and a linear Support Vector Machine (SVM). Each one learns from the first group, then makes predictions for the separate comparison group. The word weights are learned alongside each model, so the comparison and final test messages do not influence that learning\cite{pipeline}.
+
+\section{Choosing the final model}
+The comparison uses three measures focused on spam. \emph{Precision} asks how often a spam warning is right. \emph{Recall} asks how much real spam is caught. \emph{F1} combines both into one score. The project uses Logistic Regression as its final model. This choice is set in the project rather than selected automatically from the comparison results. The model is then trained again using the combined 80\% learning portion and saved for later predictions. Only after that does the project evaluate it on the untouched final test group.

@@ -3,7 +3,7 @@
 
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report
+# from sklearn.metrics import classification_report
 
 
 
@@ -15,13 +15,18 @@ from sklearn.dummy import DummyClassifier
 
 from sklearn.naive_bayes import MultinomialNB
 
+from pathlib import Path
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
 # TODO understand MultinomialNB
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import make_pipeline
 
 from spam_filter.modeling.split import DataSplits
-from spam_filter.modeling.utils import calc_metrics, customer_confusion_matrix, metricsEnum
+from spam_filter.modeling.utils import calc_metrics, customer_confusion_matrix, metricsEnum, saveComparisonResultsGraph
 
 
 from sklearn.svm import LinearSVC
@@ -108,8 +113,21 @@ def training(splits: DataSplits,  verbose = False):
         #     )
         #      , verbose)
 
-    return result
+            # Convert the collected results into a table.
+    results_df = pd.DataFrame.from_dict(result, orient="index")
 
+    # Select the metrics we want to compare.
+    comparison = results_df[
+        [
+            metricsEnum.PRECISION,
+            metricsEnum.RECALL,
+            metricsEnum.F1,
+        ]
+    ]
+    
+    saveComparisonResultsGraph(comparison)
+
+    return result
 
 
 

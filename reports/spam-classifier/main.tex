@@ -1,0 +1,85 @@
+\documentclass[11pt,a4paper,oneside]{report}
+\usepackage[a4paper,margin=27mm,headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{tgpagella}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\definecolor{accent}{HTML}{214F70}
+\definecolor{soft}{HTML}{E9F1F5}
+\definecolor{headerblue}{HTML}{214F70}
+\definecolor{rowgray}{HTML}{E9F1F5}
+\hypersetup{pdftitle={Spam Email Classifier: A Personal Project Report},pdfauthor={Mohamed Aassou},colorlinks=true,linkcolor=accent,urlcolor=accent,citecolor=accent}
+\captionsetup{font=small,labelfont=bf}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Personal project report}
+\fancyhead[R]{\small Mohamed Aassou}
+\fancyfoot[L]{\small\color{accent}Spam Email Classifier}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[L]{\small\color{accent}Spam Email Classifier}
+  \fancyfoot[R]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0.4pt}}
+\fancypagestyle{cover}{%
+  \fancyhf{}
+  \fancyfoot[C]{\small\color{accent}Spam Email Classifier}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}}
+\newcommand{\reportfigure}[4]{%
+  \begin{figure}[p]\centering
+  \includegraphics[width=#3\textwidth,height=0.72\textheight,keepaspectratio]{assets/#1}
+  \caption{#2}\label{#4}
+  \end{figure}}
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\thispagestyle{cover}
+\centering
+\vspace*{2.6cm}
+{\color{accent}\rule{0.65\textwidth}{1.3pt}}\par\vspace{0.8cm}
+{\Huge\bfseries Spam Email Classifier\par}
+\vspace{0.4cm}
+{\Large From email data to a working classifier\par}
+\vspace{0.9cm}
+{\color{accent}\rule{0.65\textwidth}{1.3pt}}\par
+\vfill
+{\large A personal project report\par}
+\vspace{1cm}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{>{\bfseries}p{35mm}p{72mm}}
+\rowcolor{headerblue}\multicolumn{2}{c}{\color{white}\bfseries Project details}\\
+\rowcolor{rowgray}Author & Mohamed Aassou\\
+\rowcolor{white}Project & Spam Email Classifier\\
+\rowcolor{rowgray}Source & \href{https://github.com/mohammedaassou/Spam-Email-Classifier}{GitHub repository}\\
+\end{tabular}
+\vspace*{1.8cm}
+\end{titlepage}
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+This report describes my personal Spam Email Classifier project. I prepared a public collection of emails, compared several ways to distinguish spam from legitimate messages, and built a small web page that shows a prediction. The examined dataset contains 2,998 messages before repeated emails are removed. On the reserved final test set, the chosen model classified 586 of 590 messages correctly. The report explains what these results show, where the current application stops, and why performance on this older collection may not reflect present-day email.
+\tableofcontents
+\listoffigures
+\clearpage\pagenumbering{arabic}
+\input{sections/01-introduction}
+\input{sections/02-data}
+\input{sections/03-method}
+\input{sections/04-results}
+\input{sections/05-application}
+\input{sections/06-discussion}
+\input{sections/07-appendix}
+\input{references}
+\end{document}

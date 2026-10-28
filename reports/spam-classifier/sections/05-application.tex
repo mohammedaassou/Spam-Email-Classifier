@@ -1,0 +1,11 @@
+\chapter{Using the classifier}
+\section{From email to result}
+The web page asks for a subject and message body. It checks that neither field is empty, then sends the text to a small FastAPI service. The service prepares the text in the same general way as the training data, asks the saved model for a prediction, and returns ``spam'' or ``legitimate.'' The page then shows the result with a short explanation. A chance of spam can be calculated inside the application, but it is not currently included in what the user sees.
+
+Figure~\ref{fig:predicta} illustrates that path. Its final ``Spam probability'' label describes a planned addition, not the current screen. Figure~\ref{fig:screen} shows the page before an email has been checked. It documents the interface rather than a completed prediction.
+
+\reportfigure{prediction_flow_a.png}{The email prediction journey. Showing a spam probability is still planned.}{0.95}{fig:predicta}
+\reportfigure{screen_home.png}{Home page with spaces for the email subject and body and a panel for the result.}{0.70}{fig:screen}
+
+\section{Current limits of the application}
+The application reads the saved model again for each prediction. That makes the design simple, but it may add delay; no timing study has been recorded. The project has a local web interface, with no evidence here of a hosted service. A few example emails are included for demonstration, but they are not a substitute for the separate evaluation set.

@@ -1,0 +1,41 @@
+\chapter{Introduction and project scope}
+\section{Why this project matters}
+Spam wastes attention and can contain deceptive offers or requests. A filter can help, but its mistakes matter: a legitimate message might be marked as spam, while an unwanted one might still reach the inbox. I built this project to learn how an email classifier is prepared, evaluated and made available through a simple web page. A person enters a subject and message body and receives a spam or legitimate result. The project does not connect to an inbox or move messages automatically.
+
+The work uses two parts of the public SpamAssassin email collection: one containing ordinary messages and one containing spam\cite{corpus}. An early project note names 97\% accuracy as a goal. The results in this report come from the saved evaluation figures and are presented separately from that goal. The source is available in the \href{https://github.com/mohammedaassou/Spam-Email-Classifier}{project's GitHub repository}.
+
+\section{Project goals}
+The main goal is to make a useful prediction from an email's subject and body. I also wanted a fair comparison between a simple starting point and several learning models. Table~\ref{tab:req} shows what the current project does and what is still planned.
+
+\begin{center}\small
+\captionof{table}{Project goals and current state}\label{tab:req}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{>{\raggedright\arraybackslash}p{31mm}>{\raggedright\arraybackslash}p{83mm}>{\raggedright\arraybackslash}p{24mm}}\toprule
+\rowcolor{headerblue}\textcolor{white}{\bfseries Goal} & \textcolor{white}{\bfseries What it means} & \textcolor{white}{\bfseries State}\\\midrule
+\rowcolor{rowgray}Enter an email & Supply a subject and body; reject empty entries. & Available\\
+\rowcolor{white}Classify it & Return spam or legitimate mail. & Available\\
+\rowcolor{rowgray}See the answer & Show the result on the web page. & Available\\
+\rowcolor{white}Show confidence & Display the estimated chance of spam. & Planned\\
+\rowcolor{rowgray}Compare fairly & Choose a model before using the reserved final test set. & Available\\
+\rowcolor{white}Measure speed & Record how long predictions take. & Planned\\\bottomrule
+\end{tabular}
+\end{center}
+
+\clearpage
+\section{Technologies used}
+The project uses a small set of tools for preparing email data, comparing models, showing results and serving the web page. Their official logos are shown in Table~\ref{tab:technology}.
+
+\begin{center}\small
+\captionof{table}{Main technologies used in the project}\label{tab:technology}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{>{\centering\arraybackslash}m{37mm}>{\raggedright\arraybackslash}m{99mm}}\toprule
+\rowcolor{headerblue}\textcolor{white}{\bfseries Official logo} & \textcolor{white}{\bfseries Role in the project}\\\midrule
+\rowcolor{rowgray}\colorbox{white}{\includegraphics[width=32mm,height=15mm,keepaspectratio]{assets/logo_python.png}} & \textbf{\href{https://www.python.org/}{Python}} is the language used to build the classifier and the web application.\\
+\rowcolor{white}\colorbox{white}{\includegraphics[width=32mm,height=15mm,keepaspectratio]{assets/logo_pandas.png}} & \textbf{\href{https://pandas.pydata.org/}{pandas}} helps read, inspect and prepare the email collection.\\
+\rowcolor{rowgray}\colorbox{white}{\includegraphics[width=32mm,height=15mm,keepaspectratio]{assets/logo_scikit_learn.png}} & \textbf{\href{https://scikit-learn.org/}{scikit-learn}} provides the text features, learning models and evaluation tools.\\
+\rowcolor{white}\colorbox{white}{\includegraphics[width=32mm,height=15mm,keepaspectratio]{assets/logo_fastapi.png}} & \textbf{\href{https://fastapi.tiangolo.com/}{FastAPI}} connects the web page to the saved classifier.\\
+\rowcolor{rowgray}\colorbox{white}{\includegraphics[width=32mm,height=15mm,keepaspectratio]{assets/logo_matplotlib.png}} & \textbf{\href{https://matplotlib.org/}{Matplotlib}} helps create charts for data exploration and model evaluation.\\\bottomrule
+\end{tabular}
+\end{center}
+
+The project also uses NLTK to prepare words, Jinja2 to display the web page and Uvicorn to run the web service.
