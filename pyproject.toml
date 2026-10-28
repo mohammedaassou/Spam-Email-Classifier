@@ -2,7 +2,7 @@
 name = "spam-filter"
 version = "0.1.0"
 description = "Add your description here"
-readme = "README.md"
+readme = "readme.md"
 authors = [
     { name = "Mohamed Aassou", email = "mohamedaassou12@gmail.com" }
 ]
@@ -19,6 +19,7 @@ dependencies = [
 
 [project.scripts]
 start = "spam_filter:main"
+train = "spam_filter.modeling.pipeline:main"
 
 [build-system]
 requires = ["uv_build>=0.12.19,<0.13.0"]

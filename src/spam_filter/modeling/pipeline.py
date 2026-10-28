@@ -60,12 +60,13 @@ def run_pipeline(
     }
 
 
-if __name__ == "__main__":
-    PROJECT_ROOT = Path(__file__).resolve().parents[3]
-        
-    DATA_PATH = PROJECT_ROOT / "data" / "processed" / "emails.csv"
-
-    artifactpath = PROJECT_ROOT / "artifacts"
-    # raw_data = pd.read_csv(DATA_PATH)
-    result = run_pipeline(DATA_PATH, artifactpath)
+def main() -> None:
+    project_root = Path(__file__).resolve().parents[3]
+    data_path = project_root / "data" / "processed" / "emails.csv"
+    artifacts_dir = project_root / "artifacts"
+    result = run_pipeline(data_path, artifacts_dir)
     log.syslog(format_run_summary(result))
+
+
+if __name__ == "__main__":
+    main()
